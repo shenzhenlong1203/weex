@@ -1,8 +1,10 @@
 <template>
-    <div class="wrapper" @click="update">
+    <div class="wrapper" @click="update" style="justify-content:center">
         <image :src="logoUrl" class="logo"></image>
         <text class="title">Hello {{target}}</text>
         <text class="desc">Now, let's use vue to build your weex app.</text>
+        <text class="label">Vue.js Star Count</text>
+        <text class="count">{{count}}</text>
     </div>
 </template>
 
@@ -28,23 +30,50 @@
         color: #888;
         font-size: 24px;
     }
+
+    .label {
+        color: #666;
+        text-align: center;
+        font-size: 60px;
+    }
+
+    .count {
+        color: #41B883;
+        text-align: center;
+        font-size: 100px;
+        margin-top: 80px;
+        margin-bottom: 100px;
+    }
 </style>
 
 <script>
+    const stream = weex.requireModule('stream');
     export default {
-        data () {
+        data() {
             return {
                 logoUrl: 'http://img1.vued.vanthink.cn/vued08aa73a9ab65dcbd360ec54659ada97c.png',
-                target: 'World'
+                target: 'World',
+                count: 'fetching...'
             }
-        }
-        ,
+        },
+        created() {
+            stream.fetch({
+                method: 'GET',
+                type: 'json',
+                url: 'https://api.github.com/repos/vuejs/vue'
+            }, res => {
+                if (res.ok) {
+                    this.count = res.data.stargazers_count
+                } else {
+                    this.count = '- unknown -'
+                }
+            })
+        },
         methods: {
             update: function (e) {
                 this.target = 'Weex';
                 console.log('target:', this.target)
             }
         }
-
     }
 </script>
